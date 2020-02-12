@@ -1,0 +1,437 @@
+﻿@*@Model  MVCProject1.Models.Student.StudentViewModels*@
+@{
+    ViewBag.Title = "Home Page";
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <style>
+        .jumbotron2 {
+            padding-top: 30px;
+            padding-bottom: 10px;
+            padding-left: 0px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: inherit;
+            background-color: #faf6f6;
+        }
+
+        .jumbotron h1 {
+            font-size: 16px;
+        }
+
+        .row {
+            background-color: transparent;
+            padding: 5px !important;
+            margin: 0 !important;
+            color: black;
+        }
+
+            .row > div {
+                /*border: 1px solid grey;*/
+            }
+
+        .nopadding {
+            padding: 0px !important;
+            margin: 0 !important;
+        }
+
+        a:link {
+            color: black;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: black;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: white;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+        a:active {
+            color: yellow;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+        tr {
+            font-size: medium;
+        }
+    </style>
+    <script>
+        //$(function() {
+        //   $("#datepicker-13").datepicker();
+        //   $("#datepicker-13").datepicker("show");
+        //});
+        $(function () {
+            $("#startdate").datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
+            $("#enddate").datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
+        });
+    </script>
+
+}
+
+<div class="jumbotron2">
+
+    <!--<p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>-->
+
+    @using (Ajax.BeginForm("GetStudentFilter", "Student", null,
+    new AjaxOptions
+    {
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "targetResultDiv",
+        OnBegin = "onBegin",
+        OnComplete = "onComplete"
+    }, new { id = "ajaxForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+
+            <div class="col-md-2 nopadding">
+                <div class="text-left">
+                    <h3><i class="glyphicon glyphicon-filter"></i>Student Filter<img id="image_loading" alt="" src="~/images/squares.gif" style="visibility:hidden;width:30px;height:30px;" /> </h3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1 nopadding">
+                &nbsp;
+            </div>
+
+            <div class="col-md-1 nopadding">
+                <div class="text-left">
+                    <input type="checkbox" id="checkdate" onclick="checkDateFunc();" />&nbsp; From :
+                </div>
+            </div>
+            <div class="col-md-2 nopadding">
+                <div class="text-left">
+                    <input type="text" name="startdate" id="startdate" style="width:130px;" />
+                </div>
+            </div>
+            <div class="col-md-1 nopadding">
+                <div class="text-left">
+                    To :&nbsp;
+                </div>
+            </div>
+            <div class="col-md-2 nopadding">
+                <div class="text-left">
+                    <input type="text" name="enddate" id="enddate" style="width:130px" />
+                </div>
+            </div>
+            <div class="col-md-1 nopadding">
+                <div class="text-left">
+                    Email :
+                </div>
+            </div>
+            <div class="col-md-1 nopadding">
+                <div class="text-left">
+                    <input type="text" name="email" id="email" placeholder="1.." style="width:130px" />
+                </div>
+            </div>
+            <div class="col-md-1 nopadding">
+                <div class="text-left">
+                    <input type="text" name="email2" id="email2" placeholder="2.." style="width:130px" />
+                </div>
+            </div>
+            <div class="col-md-1 nopadding">
+                <div class="text-left">
+                    <input type="text" name="email3" id="email3" placeholder="3.." style="width:130px" />
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="row">
+                <div class="col-md-1 nopadding">
+                    &nbsp;
+                </div>
+
+                <div class="col-md-1 nopadding">
+                    <div class="text-left">
+                        Name :
+                    </div>
+                </div>
+                <div class="col-md-2 nopadding">
+                    <div class="text-left">
+
+
+                        <input type="text" name="name" id="name" style="width:130px;" maxlength="13" />
+                    </div>
+                </div>
+
+                <div class="col-md-1 nopadding">
+                    <div class="text-left">
+                      City
+                    </div>
+                </div>
+                <div class="col-md-2 nopadding">
+                    <div class="text-left">
+
+
+                        <input type="text" name="city" id="city" style="width:130px;" maxlength="13" />
+                    </div>
+                </div>
+                <div class="col-md-1 nopadding">
+                    <div class="text-left">
+                        Status :
+                    </div>
+                </div>
+                <div class="col-md-1 nopadding">
+                    <div class="text-left">
+                        @Html.DropDownList("StatusDropdown", Model.StatusDropdownList as List<SelectListItem>, new { style = "width: 100px;height:28px;" })
+                    </div>
+                </div>
+
+                <div class="col-md-3 nopadding" style="vertical-align:top">
+                    <div class="text-left">
+                        <a href="#" onclick="javascript:SubmitAction()" class="btn btn-primary btn-md"><i class="glyphicon glyphicon-search"></i>&nbsp;SEARCH</a>
+
+                        <a href="#" onclick="javascript:ResetAction()" class="btn btn-primary btn-md"><i class="glyphicon glyphicon-reset"></i>&nbsp;RESET</a>
+
+                        @*@Ajax.ActionLink(" RESET", "Index", "Payment"
+                            , new AjaxOptions
+                            {
+                                InsertionMode = InsertionMode.Replace,
+                                OnBegin = "onBegin",
+                                OnComplete = "onComplete"
+                            }, new {@class= "glyphicon glyphicon-refresh btn btn-primary btn-md" })*@
+
+
+                        <a href="#" onclick="javascript:linktoexport()" class="btn btn-primary btn-md"><i class="glyphicon glyphicon-export"></i> EXPORT</a>
+                    </div>
+                </div>
+                <!---------------------------------------------------------------------------------------------------------->
+            </div> <!-- <input type="button" id="btnSubmit" class="btnSubmit input-small" value="Search" />-->
+
+        </div>
+    }
+</div>
+
+
+@{
+    //if (Model.CourseList != null)
+    //{
+    //    if (Model.CourseList.Count > 0)
+    //    {
+    //        int i = 0;
+    //        foreach (var CourseList in Model.CourseList)
+    //        {
+
+    //            i = i + 1;
+    //        }
+    //    }
+    //}
+
+}
+
+
+<div id="targetResultDiv">
+    @*Query Data*@
+    <table class="table small table-responsive table-condensed table-striped" style="width:100%;">
+        <thead>
+            <tr>
+                <th style="width:10px" class="text-left"></th>
+                <th class="text-left">
+                   Name
+                </th>
+                <th class="text-left">
+                    Age
+                </th>
+                <th class="text-left">
+                    City
+                </th>
+                <th class="text-left">
+                    Gender
+                </th>
+                <th class="text-left">
+                    Birthday
+                </th>
+              
+            </tr>
+        </thead>
+        @{
+            if (Model.StudentList != null)
+            {
+                if (Model.StudentList.Count > 0)
+                {
+                    foreach (var item in Model.StudentList)
+                    {
+        <tr style="font-size:small">
+            <td style="width:10px" class="text-left"><div class="accordion-icon"></div></td>
+
+            <td class="text-left">
+                @if (@item.Name != null)
+                {
+                    @item.Name
+                }
+            </td>
+            <td class="text-left">
+                @if (@item.Age != 0)
+                {
+                    @item.Age
+                }
+            </td>
+            <td style="width:120px" class="text-left">
+                @if (!string.IsNullOrEmpty(@item.City))
+                {
+                    @item.City
+                }
+            </td>
+            <td class="text-left">
+                @if (!string.IsNullOrEmpty(@item.Gender))
+                {
+                    @item.Gender
+                }
+            </td>
+            <td class="text-left">
+                @if (@item.Birthday != null)
+                {
+                    @item.Birthday.ToString("dd-MMM-yy hh:mm:tt")
+                }
+            </td>
+        </tr>
+                    }
+                }
+            }
+        }
+    </table>
+</div>
+
+
+@*<div id="comments"></div>
+    @using (Ajax.BeginForm("AjaxSubmit", "Payment", new AjaxOptions() { UpdateTargetId = "comments" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input id="Submit1" type="submit" value="submit" />
+    }*@
+
+
+
+
+
+
+<script type="text/javascript">
+
+    document.getElementById('startdate').value = '';
+    document.getElementById('startdate').disabled = true;
+    document.getElementById('enddate').value = '';
+    document.getElementById('enddate').disabled = true;
+
+    function CheckDigit(x) {
+        if (x.toString().length < 2) {
+            return '0' + x.toString();
+        }
+        else {
+            return x.toString();
+        }
+
+    }
+
+    function checkDateFunc() {
+        var d = new Date();
+        //alert(d.getFullYear());
+        var today = d.getFullYear().toString() + '-' + CheckDigit(d.getMonth()) + '-' + CheckDigit(d.getDay());
+        //new Date().year + '-' + new Date().getMonth + '-' +
+
+        if (document.getElementById('checkdate').checked) {
+            //document.getElementById('startdate').value = today;
+            document.getElementById('startdate').disabled = false;
+            //document.getElementById('enddate').value = today;
+            document.getElementById('enddate').disabled = false;
+        } else {
+            document.getElementById('startdate').value = '';
+            document.getElementById('startdate').disabled = true;
+            document.getElementById('enddate').value = '';
+            document.getElementById('enddate').disabled = true;
+        }
+    }
+
+
+    document.getElementById('startdate').value = '';
+    document.getElementById('startdate').disabled = true;
+    document.getElementById('enddate').value = '';
+    document.getElementById('enddate').disabled = true;
+
+
+    //$(".btnSubmit").click(function (e) {
+    //    if (checkfilter()) {
+    //        if (ValidateEmail()) {
+
+    //            $('form#ajaxForm').trigger('submit');
+
+    //        }
+    //    }
+    //});
+    function SubmitAction() {
+        if (checkfilter()) {
+            if (ValidateEmail()) {
+
+                $('form#ajaxForm').trigger('submit');
+
+            }
+        }
+    }
+    function checkfilter() {
+        if ((document.getElementById("startdate").value == '' && document.getElementById("enddate").value != '') ||
+            (document.getElementById("startdate").value != '' && document.getElementById("enddate").value == '')) {
+            alert('Please fill domain or email or date range before searching.\nAt least have to one filter.');
+            return false;
+        }
+        return true;
+    }
+    function ValidateEmail() {
+        var returnvalue = true;
+
+        var email = document.getElementById("email").value.trim();
+        var email2 = document.getElementById("email2").value.trim();
+        var email3 = document.getElementById("email3").value.trim();
+
+        if (email == '' && email2 == '' && email3 == '') {
+            return true;
+        }
+
+
+        if (email != '') {
+            if (/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) == false) {
+                returnvalue = false;
+            }
+        }
+        if (email2 != '') {
+            if (/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email2) == false) {
+                returnvalue = false;
+            }
+        }
+        if (email3 != '') {
+            if (/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email3) == false) {
+                returnvalue = false;
+            }
+        }
+        if (returnvalue == false) {
+            alert("The information you entered does not match the specifications for this field.")
+        }
+        return (returnvalue)
+    }
+</script>
+<script>
+    function onBegin() {
+        // TODO: show the progress image
+        var img = document.getElementById('image_loading');
+        img.style.visibility = 'visible';
+    }
+
+    function onComplete() {
+        // TODO: hide the progress image
+        var img = document.getElementById('image_loading');
+        img.style.visibility = 'hidden';
+    }
+</script>

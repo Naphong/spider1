@@ -1,0 +1,264 @@
+﻿@*@Model MVCProject1.Models.Student.StudentViewModels;*@
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    /*.nopadding {
+            padding: 0px !important;
+            margin: 0 !important;
+        }*/
+</style>
+<table class="table small table-responsive table-condensed table-striped" style="width:100%;">
+    <thead>
+        <tr>
+            <th style="width:10px" class="text-left"></th>
+            <th class="text-left">
+                Name
+            </th>
+            <th class="text-left">
+                Age
+            </th>
+            <th class="text-left">
+                City
+            </th>
+            <th class="text-left">
+                Gender
+            </th>
+            <th class="text-left">
+                Birthday
+            </th>
+
+        </tr>
+    </thead>
+
+    @{
+        if (Model.StudentList != null)
+        {
+            if (Model.StudentList.Count > 0)
+            {
+                foreach (var item in Model.StudentList)
+                {
+                    <tr style="font-size:small">
+                        <td style="width:10px" class="text-left"><div class="accordion-icon"></div></td>
+
+                        <td class="text-left">
+                            @if (@item.Name != null)
+                            {
+                                @item.Name
+                            }
+                        </td>
+                        <td class="text-left">
+                            @if (@item.Age != 0)
+                            {
+                                @item.Age
+                            }
+                        </td>
+                        <td style="width:120px" class="text-left">
+                            @if (!string.IsNullOrEmpty(@item.City))
+                            {
+                                @item.City
+                            }
+                        </td>
+                        <td class="text-left">
+                            @if (!string.IsNullOrEmpty(@item.Gender))
+                            {
+                                @item.Gender
+                            }
+                        </td>
+                        <td class="text-left">
+                            @if (@item.Birthday != null)
+                            {
+                                @item.Birthday.ToString("dd-MMM-yy hh:mm:tt")
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    }
+</table>
+@{
+    int totalPages;
+    int MaxPaging = 5;
+    int StartPage = 1;
+    decimal scrapPages;
+    int NumPerPage = 10;
+    int StopPage = 0;
+    int CurPage = 1;
+    int skipstart = 0;
+    int StartforlastPage = 0;
+    int Skipforlast = 0;
+    if (ViewBag.NumPerPage != null)
+    {
+        NumPerPage = ViewBag.NumPerPage;
+        MaxPaging = ViewBag.MaxPaging;
+        StartPage = ViewBag.StartPage;
+        CurPage = ViewBag.CurPage;
+    }
+}
+
+<div class="row" style="background-color:dodgerblue">
+    <div class="col-md-1 text-center" style="padding: 0px !important;
+            margin: 0 !important;">
+        <span>&nbsp;Page: @CurPage</span>
+    </div>
+    <div class="col-md-4 text-left" style="padding: 0px !important;
+            margin: 0 !important;">
+        @{
+            if (Model.StudentAllList!= null)
+            {
+                if (Model.StudentAllList.Count > 0)
+                {
+                    int x = 0;
+                    totalPages = Model.StudentAllList.Count / NumPerPage;
+
+                    scrapPages = Model.StudentAllList.Count % NumPerPage;
+                    if (scrapPages > 0)
+                    {
+                        totalPages = totalPages + 1;
+                    }
+
+
+                    if ((StartPage - 1) + MaxPaging > totalPages)
+                    {
+                        StopPage = totalPages;
+                    }
+                    else
+                    {
+                        StopPage = (StartPage - 1) + MaxPaging;
+                    }
+
+                    if (MaxPaging > totalPages)
+                    {
+                        StartforlastPage = totalPages;
+                        Skipforlast = (StartforlastPage * NumPerPage) - NumPerPage;
+                    }
+                    else
+                    {
+                        StartforlastPage = totalPages;
+                        Skipforlast = (StartforlastPage * NumPerPage) - NumPerPage;
+                        //StartforlastPage = totalPages - (MaxPaging / 2);
+                        //Skipforlast = (StartforlastPage * NumPerPage) - NumPerPage;
+                    }
+
+
+                    if (StartPage >= 5)
+                    {
+                        skipstart = (StartPage * NumPerPage) - NumPerPage;
+                    }
+                    if (StartPage > 1 && StartPage < 5)
+                    {
+                        skipstart = (StartPage) + NumPerPage;
+                    }
+                    if (StartPage == 1)
+                    {
+                        skipstart = 0;
+                    }
+                    x = skipstart;
+
+                    @Ajax.ActionLink("<<", // <-- Text to display
+                 "GetStudentFilterPaging",// <-- Action Method Name
+                  new { skip = 0, page = 1 }, new AjaxOptions
+                  {
+                      InsertionMode = InsertionMode.Replace,
+                      UpdateTargetId = "targetResultDiv",
+                      OnBegin = "onBegin",
+                      OnComplete = "onComplete"
+                  })
+                    <span>&nbsp;</span>
+                    for (int i = StartPage; i <= StopPage; i++)
+                    {
+                        @*<a href="#">@i &nbsp;</a>
+                            @Html.ActionLink(i.ToString(), "GetStudentFilterPaging", "Student", new { skip = x }, null);
+                            <span>&nbsp;</span>*@
+
+
+                        @Ajax.ActionLink(i.ToString(), // <-- Text to display
+                 "GetStudentFilterPaging",// <-- Action Method Name
+                  new { skip = x, page = i }, new AjaxOptions
+                  {
+                      InsertionMode = InsertionMode.Replace,
+                      UpdateTargetId = "targetResultDiv",
+                      OnBegin = "onBegin",
+                      OnComplete = "onComplete"
+                  })
+                        <span>&nbsp;</span>
+                        x = x + NumPerPage;
+                    }
+
+                    @Ajax.ActionLink(">>", // <-- Text to display
+                 "GetStudentFilterPaging",// <-- Action Method Name
+                  new { skip = Skipforlast, page = StartforlastPage }, new AjaxOptions
+                  {
+                      InsertionMode = InsertionMode.Replace,
+                      UpdateTargetId = "targetResultDiv",
+                      OnBegin = "onBegin",
+                      OnComplete = "onComplete"
+                  })
+                }
+            }
+            <span>Total : </span>@ViewBag.NumRecords; <span>&nbsp;Records</span>
+        }
+    </div>
+    <div class="col-md-6 nopadding text-center">
+    </div>
+</div>
+@*<script type="text/javascript">
+
+    document.getElementById('startdate').value = '';
+    document.getElementById('startdate').disabled = true;
+    document.getElementById('enddate').value = '';
+    document.getElementById('enddate').disabled = true;
+
+               function CheckDigit(x) {
+                   if (x.toString().length < 2) {
+                       return '0' + x.toString();
+                   }
+                   else {
+                       return x.toString();
+                   }
+
+               }
+
+               function checkDateFunc() {
+                   var d = new Date();
+                    var today = d.getFullYear().toString() + '-' + CheckDigit(d.getMonth()) + '-' + CheckDigit(d.getDay());
+
+                   if (document.getElementById('checkdate').checked) {
+                        document.getElementById('startdate').disabled = false;
+                       document.getElementById('enddate').disabled = false;
+                   } else {
+                       document.getElementById('startdate').value = '';
+                       document.getElementById('startdate').disabled = true;
+                       document.getElementById('enddate').value = '';
+                       document.getElementById('enddate').disabled = true;
+                   }
+               }
+
+
+               document.getElementById('startdate').value = '';
+               document.getElementById('startdate').disabled = true;
+               document.getElementById('enddate').value = '';
+               document.getElementById('enddate').disabled = true;
+
+
+               $(".btnSubmit").click(function (e) {
+                   if (checkfilter()) {
+                       if (ValidateEmail()) {
+
+                               $('form#ajaxForm').trigger('submit');
+
+                       }
+                   }
+               });
+               function checkfilter() {
+                   if ((document.getElementById("startdate").value == '' && document.getElementById("enddate").value != '') ||
+                       (document.getElementById("startdate").value != '' && document.getElementById("enddate").value == '')) {
+                       alert('Please fill domain or email or date range before searching.\nAt least have to one filter.');
+                       return false;
+                   }
+                   return true;
+               }
+
+           </script>*@
